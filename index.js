@@ -1,5 +1,6 @@
 var ctx = document.getElementById("canvas").getContext("2d");
 
+
 //摇色子的类
 var Dice = function(ctx, config){
 	this.ctx = ctx;
@@ -13,11 +14,21 @@ var Dice = function(ctx, config){
 }
 Dice.prototype = {
 	init: function(){
-		this.ctx.lineWidth = 5;
-		this.ctx.strokeStyle = "#009966";
-		this.ctx.strokeRect(this.x, this.y, this.width, this.height);
-		this.ctx.fillStyle = "#009966";
+		this.roundRectanglePath(this.x, this.y, this.width, this.height, 5);
 		this.drawDice();
+	},
+	roundRectanglePath: function(x, y, w, h, r) {
+		this.ctx.lineWidth = 5;
+		this.ctx.fillStyle = "#009966";
+	    this.ctx.beginPath();
+	    this.ctx.moveTo(x+r, y);
+	    this.ctx.arcTo(x+w, y, x+w, y+h, r);
+	    this.ctx.arcTo(x+w, y+h, x, y+h, r);
+	    this.ctx.arcTo(x, y+h, x, y, r);
+	    this.ctx.arcTo(x, y, x+w, y, r);
+	    this.ctx.closePath();
+	    this.ctx.fill();
+	    return this;
 	},
 	clearRect: function(){
 		var sp = this.dotWidth/2;
@@ -59,11 +70,20 @@ Dice.prototype = {
 		this.clearRect();
 		var dotRatio = this.getRandomRatio();
 		var ctx = this.ctx;
+		ctx.fillStyle = "#009966";
+		var isOneDot = (dotRatio.length == 1);
 		dotRatio.map(function(ratio, index){
 			ctx.beginPath();
+			var dotWidth = this.dotWidth;
+			if(isOneDot){
+				dotWidth = dotWidth*3;
+			}
+			if(dotRatio.length == 1 || dotRatio.length == 4){
+				ctx.fillStyle = "#ff0000";
+			}
 			ctx.arc(this.x+ratio.x*this.width, 
 				this.y+ratio.y*this.height, 
-				this.dotWidth, 0, Math.PI*2, true);
+				dotWidth, 0, Math.PI*2, true);
 			ctx.closePath();
 			ctx.fill();
 		}.bind(this))
@@ -91,7 +111,7 @@ var dice1 = new Dice(ctx, {
 	y: 50,
 	height: 100,
 	width: 100,
-	dotWidth: 6
+	dotWidth: 10
 });
 
 var dice2= new Dice(ctx, {
@@ -99,7 +119,7 @@ var dice2= new Dice(ctx, {
 	y: 50,
 	height: 100,
 	width: 100,
-	dotWidth: 6
+	dotWidth: 10
 });
 
 //摇色子
